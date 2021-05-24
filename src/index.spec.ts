@@ -9,6 +9,13 @@ import {
 } from './index';
 import { createProductSchema } from './utils/product.schema';
 import faker from 'faker';
+import fetch from 'node-fetch';
+import { mocked } from 'ts-jest/utils';
+const { Response } = jest.requireActual('node-fetch');
+
+jest.mock('node-fetch', () => {
+  return jest.fn();
+});
 
 const goodProduct = {
   name: 'product1',
@@ -123,7 +130,6 @@ test('generate a product', () => {
   });
 });
 
-
 //Test: createRandomProduct
 test('if email has the role of "creator", generate a random product', () => {
   const email = 'clark@kent.com';
@@ -142,4 +148,30 @@ test('if email does not have the role of "creator", generate a random product', 
   expect(() => createRandomProduct(email)).toThrow(
     'You are not allowed to create products',
   );
+});
+
+//Test: getStarWarsPlanet
+test('it should return star wars planets', async () => {
+  const planets = {
+    count: 60,
+    results: [{ name: 'Tatooine' }, { name: 'Alderaan' }],
+  };
+  const response = new Response(JSON.stringify(planets));
+  mocked(fetch).mockResolvedValueOnce(Promise.resolve(response));
+  const actual = await getStarWarsPlanets();
+  expect(actual).toEqual({
+    count: 60,
+    results: [{ name: 'Tatooine' }, { name: 'Alderaan' }],
+  });
+  expect(fetch).toBeCalledWith('https://swapi.dev/api/planets');
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+test('it should throw an error: unable to make request', async () => {
+  try {
+    mocked(fetch).mockRejectedValue(Promise.reject());
+    await getStarWarsPlanets();
+  } catch (e) {
+    expect(e.message).toBe('unable to make request');
+  }
 });
