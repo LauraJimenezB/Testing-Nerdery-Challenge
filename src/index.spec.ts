@@ -3,6 +3,7 @@ import {
   toLowerCase,
   removeDuplicatesFromArray,
   createRandomProduct,
+  createFakeProduct,
   getStarWarsPlanets,
   createProduct,
 } from './index';
@@ -32,6 +33,14 @@ const wrongProductWithMoreTags = {
 };
 
 faker.datatype.number = jest.fn(() => 123);
+
+faker.commerce.productName = jest.fn(() => 'newProduct');
+faker.commerce.productDescription = jest.fn(
+  () => 'This is a random generated product',
+);
+faker.commerce.price = jest.fn(() => 65);
+faker.commerce.productMaterial = jest.fn(() => 'the best material');
+faker.commerce.color = jest.fn(() => 'yellow');
 
 // Test: isInteger
 test('returns an integer from type number', () => {
@@ -100,4 +109,16 @@ test('if product is invalid because of multiple tags return error with error det
   const isValidValue = createProductSchema.validate(wrongProductWithMoreTags);
   const errorDetails = JSON.stringify(isValidValue.error.details);
   expect(() => createProduct(wrongProductWithMoreTags)).toThrow(errorDetails);
+});
+
+//Test: createFakeProduct
+test('generate a product', () => {
+  const actual = createFakeProduct();
+  expect(actual).toEqual({
+    id: 123,
+    name: 'newProduct',
+    description: 'This is a random generated product',
+    price: 65,
+    tags: ['the best material', 'yellow'],
+  });
 });

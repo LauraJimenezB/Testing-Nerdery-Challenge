@@ -77,6 +77,7 @@ export {
   toLowerCase,
   removeDuplicatesFromArray,
   createRandomProduct,
+  createFakeProduct,
   getStarWarsPlanets,
   createProduct,
 };
