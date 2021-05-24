@@ -6,6 +6,32 @@ import {
   getStarWarsPlanets,
   createProduct,
 } from './index';
+import { createProductSchema } from './utils/product.schema';
+import faker from 'faker';
+
+const goodProduct = {
+  name: 'product1',
+  description: 'this is a product',
+  price: 50,
+  tags: ['onSale'],
+};
+
+const wrongProductWithID = {
+  id: 123456,
+  name: 'product2',
+  description: 'this is not a good product',
+  price: 50,
+  tags: ['onSale'],
+};
+
+const wrongProductWithMoreTags = {
+  name: 'product2',
+  description: 'this is not a good product',
+  price: 50,
+  tags: ['onSale', 'Discount'],
+};
+
+faker.datatype.number = jest.fn(() => 123);
 
 // Test: isInteger
 test('returns an integer from type number', () => {
@@ -50,4 +76,28 @@ test('if there is more than one element in the array remove duplicates', () => {
   const multipleElementsArray = [1, 'bye', 2, 'hello', 'bye', 1, 1];
   const actual = removeDuplicatesFromArray(multipleElementsArray);
   expect(actual).toEqual([1, 'bye', 2, 'hello']);
+});
+
+//test: createProduct
+test('if product is valid return object with its properties and generated id', () => {
+  const actual = createProduct(goodProduct);
+  expect(actual).toEqual({
+    description: 'this is a product',
+    id: faker.datatype.number(),
+    name: 'product1',
+    price: 50,
+    tags: ['onSale'],
+  });
+});
+
+test('if product is invalid because of ID property return error with error details', () => {
+  const isValidValue = createProductSchema.validate(wrongProductWithID);
+  const errorDetails = JSON.stringify(isValidValue.error.details);
+  expect(() => createProduct(wrongProductWithID)).toThrow(errorDetails);
+});
+
+test('if product is invalid because of multiple tags return error with error details', () => {
+  const isValidValue = createProductSchema.validate(wrongProductWithMoreTags);
+  const errorDetails = JSON.stringify(isValidValue.error.details);
+  expect(() => createProduct(wrongProductWithMoreTags)).toThrow(errorDetails);
 });
