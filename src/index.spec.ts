@@ -122,3 +122,24 @@ test('generate a product', () => {
     tags: ['the best material', 'yellow'],
   });
 });
+
+
+//Test: createRandomProduct
+test('if email has the role of "creator", generate a random product', () => {
+  const email = 'clark@kent.com';
+  const actual = createRandomProduct(email);
+  expect(actual).toEqual({
+    id: 123,
+    name: 'newProduct',
+    description: 'This is a random generated product',
+    price: 65,
+    tags: ['the best material', 'yellow'],
+  });
+});
+
+test('if email does not have the role of "creator", generate a random product', () => {
+  const email = 'bruce@wayne.com';
+  expect(() => createRandomProduct(email)).toThrow(
+    'You are not allowed to create products',
+  );
+});
