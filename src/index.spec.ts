@@ -32,3 +32,22 @@ test('string parameter transforms to lower case', () => {
   const actual = toLowerCase(stringParameter);
   expect(actual).toEqual('hello');
 });
+
+//Test: removeDuplicatesFromArray
+test('if parameter is not an array return message', () => {
+  expect(() => removeDuplicatesFromArray(1 as any)).toThrow(
+    'please provide an array of numbers or strings',
+  );
+});
+
+test('if there is only one element in the array return the same element', () => {
+  const singleElementArray = [1];
+  const actual = removeDuplicatesFromArray(singleElementArray);
+  expect(actual).toEqual([1]);
+});
+
+test('if there is more than one element in the array remove duplicates', () => {
+  const multipleElementsArray = [1, 'bye', 2, 'hello', 'bye', 1, 1];
+  const actual = removeDuplicatesFromArray(multipleElementsArray);
+  expect(actual).toEqual([1, 'bye', 2, 'hello']);
+});
